@@ -41,14 +41,12 @@ public class MainActivity extends AppCompatActivity {
         no=findViewById(R.id.no);
         submit=findViewById(R.id.submit);
 
-
-        FirebaseFirestore firestore=FirebaseFirestore.getInstance();
-        DocumentReference add=firestore.collection("user").document();
-
-
         String deviceId=Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d("ID", deviceId);
 
+        FirebaseFirestore firestore=FirebaseFirestore.getInstance();
+        DocumentReference add=firestore.collection("user").document(deviceId);
+        CollectionReference getData=firestore.collection("user");
 
 
         yes.setOnClickListener(new View.OnClickListener() {
@@ -92,12 +90,31 @@ public class MainActivity extends AppCompatActivity {
                 user.put("select",data);
                 user.put("Id", deviceId);
 
-                add.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                getData.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                        Toast.makeText(MainActivity.this, "Data Inserted", Toast.LENGTH_SHORT).show();
+                        for(QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots)
+                        {
+                            String docId=documentSnapshot.getString("Id");
+                            Log.d("Tag",docId);
 
+                            if(docId.equals(deviceId))
+                            {
+                                Toast.makeText(MainActivity.this, "User Already Registered", Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                            {
+                                add.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        Toast.makeText(MainActivity.this, "Data Inserted", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+                            }
+                        }
                     }
                 });
 
