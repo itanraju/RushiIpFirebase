@@ -2,6 +2,7 @@ package com.example.firebaseip;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Application;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -10,9 +11,15 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.core.Context;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +42,12 @@ public class MainActivity extends AppCompatActivity {
         submit=findViewById(R.id.submit);
 
 
-        
+        FirebaseFirestore firestore=FirebaseFirestore.getInstance();
+        DocumentReference add=firestore.collection("user").document();
+
 
         String deviceId=Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d("ID", deviceId);
-
-
-
 
 
 
@@ -82,21 +88,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-
-
                 Map<String, Object> user = new HashMap<>();
                 user.put("select",data);
                 user.put("Id", deviceId);
 
-              /*  add.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                add.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
 
                         Toast.makeText(MainActivity.this, "Data Inserted", Toast.LENGTH_SHORT).show();
 
                     }
-                });*/
+                });
 
             }
         });
